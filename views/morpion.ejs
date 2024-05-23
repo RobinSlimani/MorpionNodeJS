@@ -29,7 +29,9 @@ input {
                 <td><input type="checkbox" id="case9" name="9" <%= checkboxStates['9'] === 'on' ? 'checked' : '' %>></td>
             </tr>
         </table>
-        <p><%=compteur %></p>
+        <% if (compteur){ %>
+            <div><%=compteur%></div>
+        <% } %>
         <button type="submit" id="valider">Valider</button>
     </form>
 </body>
