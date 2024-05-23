@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/RobinSlimani/MorpionNodeJS/issues"
   },
-  "homepage": "https://github.com/RobinSlimani/MorpionNodeJS#readme"
+  "homepage": "https://github.com/RobinSlimani/MorpionNodeJS#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
 }
