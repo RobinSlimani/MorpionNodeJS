@@ -1,0 +1,22 @@
+{
+  "name": "morpionnodejs",
+  "version": "1.0.0",
+  "description": "Test de creation d'un morpion avec nodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/RobinSlimani/MorpionNodeJS.git"
+  },
+  "keywords": [
+    "morpion"
+  ],
+  "author": "Robin SLIMANI",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RobinSlimani/MorpionNodeJS/issues"
+  },
+  "homepage": "https://github.com/RobinSlimani/MorpionNodeJS#readme"
+}
