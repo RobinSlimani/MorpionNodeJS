@@ -10,25 +10,26 @@ input {
 }
 </style>
 <body>
-    <h1> Jeu de Morpion </h1>
-    <form>
+    <h1>Jeu de Morpion</h1>
+    <form id="morpion-form" method="post" action="/submit">
         <table>
             <tr>
-                <td><input type="checkbox" name="1" ></td>
-                <td><input type="checkbox" name="2" ></td>
-                <td><input type="checkbox" name="3" ></td>
+                <td><input type="checkbox" id="case1" name="1" <%= checkboxStates['1'] === 'on' ? 'checked' : '' %>></td>
+                <td><input type="checkbox" id="case2" name="2" <%= checkboxStates['2'] === 'on' ? 'checked' : '' %>></td>
+                <td><input type="checkbox" id="case3" name="3" <%= checkboxStates['3'] === 'on' ? 'checked' : '' %>></td>
             </tr>
             <tr>
-                <td><input type="checkbox" name="4" ></td>
-                <td><input type="checkbox" name="5" ></td>
-                <td><input type="checkbox" name="6" ></td>
+                <td><input type="checkbox" id="case4" name="4" <%= checkboxStates['4'] === 'on' ? 'checked' : '' %>></td>
+                <td><input type="checkbox" id="case5" name="5" <%= checkboxStates['5'] === 'on' ? 'checked' : '' %>></td>
+                <td><input type="checkbox" id="case6" name="6" <%= checkboxStates['6'] === 'on' ? 'checked' : '' %>></td>
             </tr>
             <tr>
-                <td><input type="checkbox" name="7" ></td>
-                <td><input type="checkbox" name="8" ></td>
-                <td><input type="checkbox" name="9" ></td>
+                <td><input type="checkbox" id="case7" name="7" <%= checkboxStates['7'] === 'on' ? 'checked' : '' %>></td>
+                <td><input type="checkbox" id="case8" name="8" <%= checkboxStates['8'] === 'on' ? 'checked' : '' %>></td>
+                <td><input type="checkbox" id="case9" name="9" <%= checkboxStates['9'] === 'on' ? 'checked' : '' %>></td>
             </tr>
         </table>
+        <p><%=compteur %></p>
         <button type="submit" id="valider">Valider</button>
     </form>
 </body>
