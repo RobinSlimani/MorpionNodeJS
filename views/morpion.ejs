@@ -13,24 +13,20 @@ input {
     <h1>Jeu de Morpion</h1>
     <form id="morpion-form" method="post" action="/submit">
         <table>
-            <tr>
-                <td><input type="checkbox" id="case1" name="1" <%= checkboxStates['1'] === 'on' ? 'checked' : '' %>></td>
-                <td><input type="checkbox" id="case2" name="2" <%= checkboxStates['2'] === 'on' ? 'checked' : '' %>></td>
-                <td><input type="checkbox" id="case3" name="3" <%= checkboxStates['3'] === 'on' ? 'checked' : '' %>></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" id="case4" name="4" <%= checkboxStates['4'] === 'on' ? 'checked' : '' %>></td>
-                <td><input type="checkbox" id="case5" name="5" <%= checkboxStates['5'] === 'on' ? 'checked' : '' %>></td>
-                <td><input type="checkbox" id="case6" name="6" <%= checkboxStates['6'] === 'on' ? 'checked' : '' %>></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" id="case7" name="7" <%= checkboxStates['7'] === 'on' ? 'checked' : '' %>></td>
-                <td><input type="checkbox" id="case8" name="8" <%= checkboxStates['8'] === 'on' ? 'checked' : '' %>></td>
-                <td><input type="checkbox" id="case9" name="9" <%= checkboxStates['9'] === 'on' ? 'checked' : '' %>></td>
-            </tr>
+            <% for (let row = 0; row < 3; row++) { %>
+                <tr>
+                    <% for (let col = 1; col <= 3; col++) { 
+                        let index = row * 3 + col; %>
+                        <td>
+                            <input type="checkbox" id="case<%= index %>" name="<%= index %>" <%= checkboxStates[index] === 'on' ? 'checked' : '' %>>
+                            <input type="hidden" name="<%= index %>-hidden" value="<%= checkboxStates[index] || '' %>">
+                        </td>
+                    <% } %>
+                </tr>
+            <% } %>
         </table>
-        <% if (compteur){ %>
-            <div><%=compteur%></div>
+        <% if (compteur) { %>
+            <div><%= compteur %></div>
         <% } %>
         <button type="submit" id="valider">Valider</button>
     </form>
