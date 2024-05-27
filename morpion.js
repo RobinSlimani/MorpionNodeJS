@@ -46,6 +46,7 @@ app.get('/win', (req, res) => {
 });
 
 app.get('/', (req, res) => {
+    let checkboxStates = {};
     res.render('morpion', { checkboxStates, compteur:0 });
 });
 
