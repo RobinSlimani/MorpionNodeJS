@@ -23,7 +23,7 @@ app.post('/submit', (req, res) => {
     console.log(compteur);
     console.log(coche);
 
-    if (compteur === 3) {
+    if (compteur >= 3) {
         const winningCombinations = [
             [1, 2, 3], [4, 5, 6], [7, 8, 9],
             [1, 4, 7], [2, 5, 8], [3, 6, 9],
@@ -38,7 +38,7 @@ app.post('/submit', (req, res) => {
         }
     }
 
-    res.render('morpion1', { checkboxStates, compteur });
+    res.render('morpion', { checkboxStates, compteur });
 });
 
 app.get('/win', (req, res) => {
@@ -46,7 +46,7 @@ app.get('/win', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.render('morpion1', { checkboxStates, compteur:0 });
+    res.render('morpion', { checkboxStates, compteur:0 });
 });
 
 app.listen(port, () => {
