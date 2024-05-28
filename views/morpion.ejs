@@ -19,7 +19,7 @@ input {
                         let index = row * 3 + col; %>
                         <td>
                             <input type="checkbox" id="case<%= index %>" name="<%= index %>" <%= checkboxStates[index] === 'on' ? 'checked' : '' %>>
-                            <input type="hidden" name="<%= index %>-hidden" value="<%= checkboxStates[index] || '' %>">
+                            <input type="hidden" name="case<%= index %>" value="<%= checkboxStates[index] || '' %>">
                         </td>
                     <% } %>
                 </tr>
