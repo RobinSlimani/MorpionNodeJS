@@ -4,7 +4,9 @@
   "description": "Test de creation d'un morpion avec nodeJS",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "db:start": "docker run --name morpionBD -e POSTGRES_PASSWORD=morpion -p 5432:5432 -e PGDATA=/var/lib/postgresql/data/pgdata -v ./.docker/pg:/var/lib/postgresql/data -d postgres",
+    "db:stop": "docker stop morpionBD && docker rm morpionBD",
+    "start": "node morpionBD.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,8 @@
   "homepage": "https://github.com/RobinSlimani/MorpionNodeJS#readme",
   "dependencies": {
     "ejs": "^3.1.10",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "sequelize": "^6.37.3"
   }
 }
