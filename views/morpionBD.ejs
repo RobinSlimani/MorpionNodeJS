@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Morpion</title>
+</head>
+<style>
+input {
+    margin: 30px;
+}
+</style>
+<body>
+    <h1>Jeu de Morpion</h1>
+    <form id="morpion-form" method="post" action="/game/<%= gameId %>/submit">
+        <table>
+            <% for (let row = 0; row < 3; row++) { %>
+                <tr>
+                    <% for (let col = 1; col <= 3; col++) { 
+                        let index = row * 3 + col; %>
+                        <td>
+                            <input type="checkbox" id="case<%= index %>" name="<%= index %>" <%= checkboxStates[index] === 'on' ? 'checked' : '' %>>
+                        </td>
+                    <% } %>
+                </tr>
+            <% } %>
+        </table>
+        <% if (compteur) { %>
+            <div>Nombres cases cochées : <%= compteur %></div>
+        <% } %>
+        <button type="submit" id="valider">Valider</button>
+    </form>
+</body>
+</html>
+
