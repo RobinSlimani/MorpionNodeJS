@@ -64,7 +64,7 @@ export default function Game() {
     setCurrentMove(nextHistory.length - 1);
 
     fetch('http://localhost:3001/api/game', {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
