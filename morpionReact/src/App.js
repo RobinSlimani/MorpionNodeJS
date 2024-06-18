@@ -50,12 +50,12 @@ export default function Game() {
   const [gamesPlayed, setGamesPlayed] = useState(0);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/game')
+    fetch('/api')
       .then(response => response.json())
       .then(data => setGameState(data))
       .catch(error => console.error('Error fetching game state:', error));
 
-    fetch('http://localhost:3001/api/games')
+    fetch('/api/games')
       .then(response => response.json())
       .then(data => setGamesPlayed(data.gamesPlayed))
       .catch(error => console.error('Error fetching games played:', error));
@@ -63,7 +63,7 @@ export default function Game() {
 
   useEffect(() => {
     if (gameState.winner) {
-      fetch('http://localhost:3001/api/games')
+      fetch('/api/games')
         .then(response => response.json())
         .then(data => setGamesPlayed(data.gamesPlayed))
         .catch(error => console.error('Error fetching games played:', error));
@@ -79,7 +79,7 @@ export default function Game() {
     const newSquares = currentSquares.slice();
     newSquares[squareIndex] = gameState.currentMove % 2 === 0 ? 'X' : 'O';
 
-    fetch('http://localhost:3001/api/game', {
+    fetch('/api/game', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default function Game() {
   }
 
   function jumpTo(move) {
-    fetch('http://localhost:3001/api/game/jump', {
+    fetch('/api/game/jump', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export default function Game() {
   }
 
   function resetGame() {
-    fetch('http://localhost:3001/api/game/reset', {
+    fetch('/api/game/reset', {
       method: 'POST',
     })
       .then(response => response.json())
