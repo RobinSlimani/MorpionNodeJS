@@ -10,6 +10,9 @@ function Square({ value, onSquareClick }) {
 
 function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
+    if (squares.winner || squares.history[squares.currentMove][i]) {
+      return;
+    }
     onPlay(i);
   }
 
@@ -44,13 +47,28 @@ export default function Game() {
     currentMove: 0,
     winner: null,
   });
+  const [gamesPlayed, setGamesPlayed] = useState(0);
 
   useEffect(() => {
     fetch('http://localhost:3001/api/game')
       .then(response => response.json())
       .then(data => setGameState(data))
       .catch(error => console.error('Error fetching game state:', error));
+
+    fetch('http://localhost:3001/api/games')
+      .then(response => response.json())
+      .then(data => setGamesPlayed(data.gamesPlayed))
+      .catch(error => console.error('Error fetching games played:', error));
   }, []);
+
+  useEffect(() => {
+    if (gameState.winner) {
+      fetch('http://localhost:3001/api/games')
+        .then(response => response.json())
+        .then(data => setGamesPlayed(data.gamesPlayed))
+        .catch(error => console.error('Error fetching games played:', error));
+    }
+  }, [gameState.winner]);
 
   function handlePlay(squareIndex) {
     const currentSquares = gameState.history[gameState.currentMove];
@@ -86,6 +104,15 @@ export default function Game() {
       .catch(error => console.error('Error jumping to move:', error));
   }
 
+  function resetGame() {
+    fetch('http://localhost:3001/api/game/reset', {
+      method: 'POST',
+    })
+      .then(response => response.json())
+      .then(data => setGameState(data))
+      .catch(error => console.error('Error resetting game state:', error));
+  }
+
   const moves = gameState.history.map((squares, move) => {
     const description = move ? 'Go to move #' + move : 'Go to game start';
     return (
@@ -103,7 +130,9 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={gameState} onPlay={handlePlay} />
       </div>
       <div className="game-info">
+        <div>Games played: {gamesPlayed}</div>
         <ol>{moves}</ol>
+        {gameState.winner && <button onClick={resetGame}>New Game</button>}
       </div>
     </div>
   );

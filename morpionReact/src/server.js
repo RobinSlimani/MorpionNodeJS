@@ -1,13 +1,30 @@
 const express = require('express');
 const cors = require('cors');
+const redis = require('redis');
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+const redisClient = redis.createClient();
+
+redisClient.on('error', (err) => {
+  console.error('Redis error:', err);
+});
+
+(async () => {
+  try {
+    await redisClient.connect();
+    console.log('Connected to Redis');
+  } catch (err) {
+    console.error('Failed to connect to Redis:', err);
+  }
+})();
+
 let gameState = {
   history: [Array(9).fill(null)],
   currentMove: 0,
+  winner: null,
 };
 
 function calculateWinner(squares) {
@@ -34,7 +51,7 @@ app.get('/api/game', (req, res) => {
   res.json(gameState);
 });
 
-app.put('/api/game', (req, res) => {
+app.put('/api/game', async (req, res) => {
   const { currentMove, squares } = req.body;
   const newHistory = [...gameState.history.slice(0, currentMove + 1), squares];
   const winner = calculateWinner(squares);
@@ -43,6 +60,15 @@ app.put('/api/game', (req, res) => {
     currentMove: newHistory.length - 1,
     winner: winner,
   };
+
+  if (winner) {
+    try {
+      await redisClient.incr('gamesPlayed');
+    } catch (err) {
+      console.error('Redis incr error:', err);
+    }
+  }
+
   res.json(gameState);
 });
 
@@ -51,6 +77,25 @@ app.post('/api/game/jump', (req, res) => {
   const newMove = Math.min(Math.max(move, 0), gameState.history.length - 1);
   gameState.currentMove = newMove;
   res.json(gameState);
+});
+
+app.post('/api/game/reset', (req, res) => {
+  gameState = {
+    history: [Array(9).fill(null)],
+    currentMove: 0,
+    winner: null,
+  };
+  res.json(gameState);
+});
+
+app.get('/api/games', async (req, res) => {
+  try {
+    const reply = await redisClient.get('gamesPlayed');
+    res.json({ gamesPlayed: reply || 0 });
+  } catch (err) {
+    console.error('Redis get error:', err);
+    res.status(500).json({ error: 'Could not retrieve games played' });
+  }
 });
 
 const PORT = process.env.PORT || 3001;
