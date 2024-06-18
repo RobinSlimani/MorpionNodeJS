@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Square({ value, onSquareClick }) {
   return (
@@ -10,109 +10,84 @@ function Square({ value, onSquareClick }) {
 
 function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    const nextSquares = squares.slice();
-    if (xIsNext) {
-      nextSquares[i] = 'X';
-    } else {
-      nextSquares[i] = 'O';
-    }
-    onPlay(nextSquares);
+    onPlay(i);
   }
 
-  const winner = calculateWinner(squares);
-  let status;
-  if (winner) {
-    status = 'Winner: ' + winner;
-  } else {
-    status = 'Next player: ' + (xIsNext ? 'X' : 'O');
-  }
+  const winner = squares.winner;
+  const status = winner ? 'Winner: ' + winner : 'Next player: ' + (xIsNext ? 'X' : 'O');
 
   return (
     <>
       <div className="status">{status}</div>
       <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
+        {squares.history[squares.currentMove].slice(0, 3).map((value, index) => (
+          <Square key={index} value={value} onSquareClick={() => handleClick(index)} />
+        ))}
       </div>
       <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
+        {squares.history[squares.currentMove].slice(3, 6).map((value, index) => (
+          <Square key={index} value={value} onSquareClick={() => handleClick(index + 3)} />
+        ))}
       </div>
       <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+        {squares.history[squares.currentMove].slice(6, 9).map((value, index) => (
+          <Square key={index} value={value} onSquareClick={() => handleClick(index + 6)} />
+        ))}
       </div>
     </>
   );
 }
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const [gameState, setGameState] = useState({
+    history: [Array(9).fill(null)],
+    currentMove: 0,
+    winner: null,
+  });
 
-  function handlePlay(nextSquares) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
+  useEffect(() => {
+    fetch('http://localhost:3001/api/game')
+      .then(response => response.json())
+      .then(data => setGameState(data))
+      .catch(error => console.error('Error fetching game state:', error));
+  }, []);
+
+  function handlePlay(squareIndex) {
+    const currentSquares = gameState.history[gameState.currentMove];
+    if (currentSquares[squareIndex] || gameState.winner) {
+      return;
+    }
+
+    const newSquares = currentSquares.slice();
+    newSquares[squareIndex] = gameState.currentMove % 2 === 0 ? 'X' : 'O';
 
     fetch('http://localhost:3001/api/game', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ squares: nextSquares }),
+      body: JSON.stringify({ currentMove: gameState.currentMove, squares: newSquares }),
     })
-      .then(response => {
-        if (response.ok) {
-          console.log('Données du jeu envoyées avec succès');
-        } else {
-          console.error('Erreur lors de l\'envoi des données du jeu');
-        }
-      })
-      .catch(error => {
-        console.error('Erreur lors de l\'envoi des données du jeu :', error);
-      });
+      .then(response => response.json())
+      .then(data => setGameState(data))
+      .catch(error => console.error('Error updating game state:', error));
   }
 
-  function jumpTo(nextMove) {
-    setCurrentMove(nextMove);
+  function jumpTo(move) {
+    fetch('http://localhost:3001/api/game/jump', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ move }),
+    })
+      .then(response => response.json())
+      .then(data => setGameState(data))
+      .catch(error => console.error('Error jumping to move:', error));
+  }
 
-fetch(`http://localhost:3001/api/game?move=${nextMove}`)
-  .then(response => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Erreur lors de la récupération des données du jeu');
-    }
-  })
-  .then(data => {
-    console.log('Données du jeu récupérées avec succès :', data);
-    if (data && data.history) {
-      setHistory(data.history);
-    } else {
-      console.error('Données du jeu invalides :', data);
-    }
-  })
-  .catch(error => {
-    console.error('Erreur lors de la récupération des données du jeu :', error);
-  });
-}
-	
-  const moves = history.map((squares, move) => {
-    let description;
-    if (move > 0) {
-      description = 'Go to move #' + move;
-    } else {
-      description = 'Go to game start';
-    }
+  const moves = gameState.history.map((squares, move) => {
+    const description = move ? 'Go to move #' + move : 'Go to game start';
     return (
       <li key={move}>
         <button onClick={() => jumpTo(move)}>{description}</button>
@@ -120,35 +95,17 @@ fetch(`http://localhost:3001/api/game?move=${nextMove}`)
     );
   });
 
+  const xIsNext = gameState.currentMove % 2 === 0;
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board xIsNext={xIsNext} squares={gameState} onPlay={handlePlay} />
       </div>
       <div className="game-info">
         <ol>{moves}</ol>
       </div>
     </div>
   );
-}
-
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
 }
 

@@ -11,5 +11,9 @@ CREATE DATABASE morpion;
 
 enfin il suffit juste de faire un docker run start et normalement l’application fonctionne.
 
+Même s'il se trouve que dans la version acctuelle l'application est devenu seulement une application qui peut répondre à des get / put / post parce que je n'avais pas bien compris le tp 8, pour cela il faut revenir à une ancienne version de mon dépot git où je n'avais fais que le jeu et non pas la partie API
+
+Pour la partie React il faut se rendre dans ./morpionReact
+ensuite on lance deux terminaux un pour lancer server.js dans src et l'autre pour faire npm start (ce qui lance l'application). 
 
 Robin SLIMANI
